@@ -114,7 +114,9 @@ var Cell = function(canvasId) {
 			var br = Math.random();
 			var bl = Math.random();
 			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness);
-			if (console) console.info("%i iterations",xx);
+			if (console) {
+				console.info("%i iterations",xx);
+			}
 		}
 	};
 	return self;
