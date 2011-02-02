@@ -23,16 +23,16 @@ var Cell = function(canvasId) {
 			if (cn > 1) cn = 1;
 			if (cn < 0) cn = 0;
 
-			var sRange = 0;
+			/*var sRange = 0;
 			var tm = randomDisplacement([tl, tr], sRange);
 			var rm = randomDisplacement([tr, br], sRange);
 			var bm = randomDisplacement([br, bl], sRange);
-			var lm = randomDisplacement([tl, bl], sRange);
+			var lm = randomDisplacement([tl, bl], sRange);*/
 
-			/*var tm = (tl + tr) / 2;
+			var tm = (tl + tr) / 2;
 			var rm = (tr + br) / 2;
 			var bm = (br + bl) / 2;
-			var lm = (tl + bl) / 2;*/
+			var lm = (tl + bl) / 2;
 
 			divideMap(x, y, newBlockSize, tl, tm, cn, lm, pointSize, newRange, roughness);
 			divideMap(x+newBlockSize, y, newBlockSize, tm, tr, rm, cn, pointSize, newRange, roughness);
@@ -114,10 +114,31 @@ var Cell = function(canvasId) {
 			var br = Math.random();
 			var bl = Math.random();
 			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness);
-			if (console) {
-				console.info("%i iterations",xx);
+		},
+		
+		plotCurve : function(mod) {
+			self.clearCanvas();
+			if (!mod) {
+				mod = function(n){return n}; 
 			}
+			var cHeight = canvas.height;
+			var vals = [];
+			var max = mod(100);
+			var fac =  1 / max;
+			ctx.fillStyle = "#111";
+			for (var i = 100; i >=0; i--) {
+				n = mod(i) * fac;
+				vals[i] = n;
+				ctx.fillRect(i, cHeight-1-(n*100) ,1,1);
+			}
+			console.info(vals);
+		},
+
+		clearCanvas : function() {
+			canvas.height = 512;
+			canvas.width = 512;
 		}
+
 	};
 	return self;
 };
