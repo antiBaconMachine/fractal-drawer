@@ -3,16 +3,53 @@
   <head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		
+		<style type="text/css">
+			input { 
+				width : 40px;
+			}
+			#btnSubmit {
+				width: 120px;
+			}
+		</style>
   </head>
   <body>
 	<canvas id="canvas" height="512" width="512"></canvas>
-	
+	<form id="generator">
+		<select name="selUnitSize" id="selUnitSize">
+			<option>1 (slow)</option>
+			<option>2 (slow)</option>
+			<option selected="true">4</option>
+			<option>8</option>
+			<option>16</option>
+			<option>32</option>
+			<option>64</option>
+			<option>128</option>
+		</select>
+		<label for="selUnitSize">Unit size</label>
+		<br/>
+		<input name="txtRange" id="txtRange" type="text" value="2">
+		<label for="txtRange">Range</label>
+		<br/>
+		<input name="txtRoughness" id="txtRoughness" type="text" value="0.5">
+		<label for="txtRoughness">Roughness</label>
+		<br/>
+		<input type="submit" name="btnSubmit" id="btnSubmit" value="generate"/>
+	</form>
 	<script src="displace.js"></script>
 	<script type="text/javascript">
+		var cell;
 		window.onload=function() {
-			var cell = new Cell("canvas");
-			cell.drawMap(4);
+			cell = new Cell("canvas");
+			document.forms[0].onsubmit = function(event) {
+				
+				var pSize = parseInt(document.getElementById("selUnitSize").value);
+				var range = (document.getElementById("txtRange").value);
+				var roughness = (document.getElementById("txtRoughness").value);
+
+				cell.drawMap(pSize, range, roughness);
+				
+				return false;
+			}
 		}
 	</script>
   </body>

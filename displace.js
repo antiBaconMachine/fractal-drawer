@@ -105,8 +105,8 @@ var Cell = function(canvasId) {
 	var self = {
 		drawMap : function(pointSize, range, roughness) {
 			if (!pointSize) pointSize = 4;
-			if (!range) range = 1;
-			if (!roughness) roughness = 0.5;
+			if (!range) range = 4;
+			if (!roughness) roughness = 0.4;
 			xx = 0;
 			
 			var tl = Math.random();
