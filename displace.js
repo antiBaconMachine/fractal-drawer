@@ -12,8 +12,9 @@ var Cell = function(canvasId) {
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
 	var xx = 0;
+	var maxCurve;
 
-	function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness) {
+	function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness, curve) {
 		xx++;
 		if (blockSize > pointSize) {
 
@@ -34,20 +35,21 @@ var Cell = function(canvasId) {
 			var bm = (br + bl) / 2;
 			var lm = (tl + bl) / 2;
 
-			divideMap(x, y, newBlockSize, tl, tm, cn, lm, pointSize, newRange, roughness);
-			divideMap(x+newBlockSize, y, newBlockSize, tm, tr, rm, cn, pointSize, newRange, roughness);
-			divideMap(x+newBlockSize, y+newBlockSize, newBlockSize, cn, rm, br, bm, pointSize, newRange, roughness);
-			divideMap(x, y+newBlockSize, newBlockSize, lm, cn, bm, bl, pointSize, newRange, roughness);
+			divideMap(x, y, newBlockSize, tl, tm, cn, lm, pointSize, newRange, roughness, curve);
+			divideMap(x+newBlockSize, y, newBlockSize, tm, tr, rm, cn, pointSize, newRange, roughness, curve);
+			divideMap(x+newBlockSize, y+newBlockSize, newBlockSize, cn, rm, br, bm, pointSize, newRange, roughness, curve);
+			divideMap(x, y+newBlockSize, newBlockSize, lm, cn, bm, bl, pointSize, newRange, roughness, curve);
 
 
 		} else {
 			var p = (tl + tr + bl + br) / 4;
-			ctx.fillStyle = getColour(p);
+			ctx.fillStyle = getColour(p, curve);
 			ctx.fillRect(x,y,blockSize,blockSize);
 		}
 	}
 
-	function getColour(c) {
+	function getColour(c, curve) {
+		c = curve(c) * maxCurve;
 		//Colour mapping algorythm 'borrowed ' from http://www.ic.sunysb.edu/Stu/jseyster/plasma/
 		red = 0;
 		green = 0;
@@ -103,17 +105,22 @@ var Cell = function(canvasId) {
 	}
 
 	var self = {
-		drawMap : function(pointSize, range, roughness) {
+		drawMap : function(pointSize, range, roughness, curve) {
 			if (!pointSize) pointSize = 4;
 			if (!range) range = 4;
 			if (!roughness) roughness = 0.4;
 			xx = 0;
+			if (!curve) {
+				curve = function(n){return n}; 
+			}
+			maxCurve = 1 / curve(1);
 			
 			var tl = Math.random();
 			var tr = Math.random();
 			var br = Math.random();
 			var bl = Math.random();
-			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness);
+			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness, curve);
+			maxCurve = null;
 		},
 		
 		plotCurve : function(mod) {
@@ -123,13 +130,13 @@ var Cell = function(canvasId) {
 			}
 			var cHeight = canvas.height;
 			var vals = [];
-			var max = mod(100);
+			var max = mod(1);
 			var fac =  1 / max;
 			ctx.fillStyle = "#111";
 			for (var i = 100; i >=0; i--) {
-				n = mod(i) * fac;
+				n = mod(i/100) * fac;
 				vals[i] = n;
-				ctx.fillRect(i, cHeight-1-(n*100) ,1,1);
+				ctx.fillRect(i*4, cHeight-1-(n*400) ,1,1);
 			}
 			console.info(vals);
 		},
