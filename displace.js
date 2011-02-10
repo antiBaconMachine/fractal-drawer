@@ -15,6 +15,46 @@ var Cell = function(canvasId) {
  var maxCurve;
  var distributionLog;
 
+ function iterateMap(blockSize, pointSize, range, roughness, curve) {
+  var seed = Math.random();
+  var dim = blockSize/pointSize;
+  var grid = initGrid(dim, seed, seed, seed, seed);
+  var i,j;
+
+  while (pointSize < blockSize) {
+   i=0;
+   j=0;
+   while (i<dim) {
+	var ost = i + blockSize-1
+	var mid = i+ (blockSize-1);
+	grid[i+mid][i+mid] = randomDisplacement([grid[i][i], grid[i][ost], grid[ost][i], grid[ost][ost]],range);
+	i=i+blockSize;
+   }
+
+   blockSize = Math.floor(blockSize/2);
+   range = range * roughness;
+  }
+  return grid;
+  
+ }
+
+ function initGrid(dim, tl, tr, tl, br) {
+  var grid = [];
+  for (var i=0; i < dim; i++) {
+   grid[i]=[];
+   for (var j=0; j < dim; j++) {
+	grid[i][j] = null;
+   }
+  }
+  dim--;
+  grid[0][0]	= tl;
+  grid[0][dim] = tr;
+  grid[dim][0] = tl;
+  grid[dim][dim] = br;
+
+  return grid;
+ }
+
  function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness, curve) {
   xx++;
   if (blockSize > pointSize) {
@@ -142,9 +182,14 @@ var Cell = function(canvasId) {
    var tr = Math.random();
    var br = Math.random();
    var bl = Math.random();
-   divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness, curve);
+   iterateMap(initGrid(canvas.width / pointSize,tl,tr,br,bl),0,0,canvas.width,pointSize,range,roughness, curve);
    maxCurve = null;
    processDistribution(booLog, xx);
+  },
+
+  iteratePoints : function() {
+   //blockSize, pointSize, range, roughness, curve
+   console.info(iterateMap(5,1,0.5,0.5));
   },
 
   plotCurve : function(mod) {
