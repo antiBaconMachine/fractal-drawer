@@ -30,6 +30,21 @@ var Cell = function(canvasId) {
 	grid[i+mid][i+mid] = randomDisplacement([grid[i][i], grid[i][ost], grid[ost][i], grid[ost][ost]],range);
 	i=i+blockSize;
    }
+   
+   while (i<dim) {
+	var ost = i + blockSize-1
+	var mid = i+ (blockSize-1);
+
+	//i,i
+	var lft =
+	//i+blocksize, i
+
+	//i+mid, i-mid
+
+	//i+mid, i+mid
+
+	i=i+blockSize;
+   }
 
    blockSize = Math.floor(blockSize/2);
    range = range * roughness;
