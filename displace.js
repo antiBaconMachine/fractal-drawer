@@ -19,29 +19,39 @@ var Cell = function(canvasId) {
   var seed = Math.random();
   var dim = blockSize/pointSize;
   var grid = initGrid(dim, seed, seed, seed, seed);
-  var i,j;
+  var len = grid.length;
+  var i,j,ost,mid;
 
   while (pointSize < blockSize) {
    i=0;
    j=0;
    while (i<dim) {
-	var ost = i + blockSize-1
-	var mid = i+ (blockSize-1);
+        //diamond - find the midpoint
+	ost = i + blockSize-1
+	mid = i+ (blockSize-1);
 	grid[i+mid][i+mid] = randomDisplacement([grid[i][i], grid[i][ost], grid[ost][i], grid[ost][ost]],range);
 	i=i+blockSize;
    }
-   
+
+   i=0;
+   j=0;
    while (i<dim) {
-	var ost = i + blockSize-1
-	var mid = i+ (blockSize-1);
+       //square find 4 new points to make squares
+	ost = (blockSize-1) /2;
+	mid = i+ (blockSize-1);
 
-	//i,i
-	var lft =
-	//i+blocksize, i
+        //1 point on each diamond may be out of range, in which case wrap round and take from the other side
+	
+        tl = grid[i][i];
+        cen = grid[i+mid][i+mid];
+        ml = grid[(i-ost < 0 ? len -ost : i-ost)][i+mid];
+        bl = grid[i][i+blockSize];
 
-	//i+mid, i-mid
+        tr = grid[i][i+blockSize];
+        tc = grid[i+ost][(i-ost) < 0 ? len-ost : i-ost];
 
-	//i+mid, i+mid
+
+        grid[i][i+mid] = randomDisplacement([top,left,bottom,right], range);
 
 	i=i+blockSize;
    }
@@ -53,7 +63,7 @@ var Cell = function(canvasId) {
   
  }
 
- function initGrid(dim, tl, tr, tl, br) {
+ function initGrid(dim, tl, tr, bl, br) {
   var grid = [];
   for (var i=0; i < dim; i++) {
    grid[i]=[];
@@ -63,8 +73,8 @@ var Cell = function(canvasId) {
   }
   dim--;
   grid[0][0]	= tl;
-  grid[0][dim] = tr;
-  grid[dim][0] = tl;
+  grid[dim][0] = tr;
+  grid[0][dim] = bl;
   grid[dim][dim] = br;
 
   return grid;
