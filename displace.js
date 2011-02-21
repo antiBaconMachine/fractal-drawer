@@ -20,16 +20,17 @@ var Cell = function(canvasId) {
   var dim = blockSize/pointSize;
   var grid = initGrid(dim, seed, seed, seed, seed);
   var len = grid.length;
-  var i,j,ost,mid;
+  var i,j,ost,mid,far;
+  var tr,tl,br,bl,cn,tc,mr,bc,ml;
 
   while (pointSize < blockSize) {
    i=0;
    j=0;
    while (i<dim) {
         //diamond - find the midpoint
-	ost = i + blockSize-1
-	mid = i+ (blockSize-1);
-	grid[i+mid][i+mid] = randomDisplacement([grid[i][i], grid[i][ost], grid[ost][i], grid[ost][ost]],range);
+	ost = (blockSize-1);
+	mid = i+ ost/2;
+	grid[mid][mid] = randomDisplacement([grid[i][i], grid[i][i+ost], grid[i+ost][i], grid[i+ost][i+ost]],range);
 	i=i+blockSize;
    }
 
@@ -37,23 +38,29 @@ var Cell = function(canvasId) {
    j=0;
    while (i<dim) {
        //square find 4 new points to make squares
-	ost = (blockSize-1) /2;
-	mid = i+ (blockSize-1);
-
+	ost = (blockSize-1);
+	mid = i+ ost/2;
+	far = mid+ost > len ? (mid+ost) - len : mid+ost;
         //1 point on each diamond may be out of range, in which case wrap round and take from the other side
 	
         tl = grid[i][i];
-        cen = grid[i+mid][i+mid];
-        ml = grid[(i-ost < 0 ? len -ost : i-ost)][i+mid];
-        bl = grid[i][i+blockSize];
+        bl = grid[i][i+ost];
+        tr = grid[i][i+ost];
+		br = grid[i+ost][i+ost];
 
-        tr = grid[i][i+blockSize];
+        cn = grid[mid][mid];
+
+        ml = grid[(i-ost < 0 ? len -ost : i-ost)][mid];
         tc = grid[i+ost][(i-ost) < 0 ? len-ost : i-ost];
+		mr = grid[far][i+ost]
+		bc = grid[i+ost][far]
 
+        grid[mid][i] = randomDisplacement([tc,tr,cn,tl], range);
+        grid[i+ost][mid] = randomDisplacement([tr,mr,cn,br], range);
+        grid[mid][i+ost] = randomDisplacement([cn,br,bc,bl], range);
+        grid[i][mid] = randomDisplacement([tl,cn,bl,ml], range);
 
-        grid[i][i+mid] = randomDisplacement([top,left,bottom,right], range);
-
-	i=i+blockSize;
+		i=i+blockSize;
    }
 
    blockSize = Math.floor(blockSize/2);
