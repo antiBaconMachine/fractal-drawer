@@ -13,7 +13,7 @@ var Cell = function(canvasId) {
 	var ctx = canvas.getContext("2d");
 	var xx = 0;
 
-	function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness) {
+	function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness, getColour) {
 		xx++;
 		if (blockSize > pointSize) {
 
@@ -34,10 +34,10 @@ var Cell = function(canvasId) {
 			var bm = (br + bl) / 2;
 			var lm = (tl + bl) / 2;
 
-			divideMap(x, y, newBlockSize, tl, tm, cn, lm, pointSize, newRange, roughness);
-			divideMap(x+newBlockSize, y, newBlockSize, tm, tr, rm, cn, pointSize, newRange, roughness);
-			divideMap(x+newBlockSize, y+newBlockSize, newBlockSize, cn, rm, br, bm, pointSize, newRange, roughness);
-			divideMap(x, y+newBlockSize, newBlockSize, lm, cn, bm, bl, pointSize, newRange, roughness);
+			divideMap(x, y, newBlockSize, tl, tm, cn, lm, pointSize, newRange, roughness, getColour);
+			divideMap(x+newBlockSize, y, newBlockSize, tm, tr, rm, cn, pointSize, newRange, roughness, getColour);
+			divideMap(x+newBlockSize, y+newBlockSize, newBlockSize, cn, rm, br, bm, pointSize, newRange, roughness, getColour);
+			divideMap(x, y+newBlockSize, newBlockSize, lm, cn, bm, bl, pointSize, newRange, roughness, getColour);
 
 
 		} else {
@@ -47,7 +47,66 @@ var Cell = function(canvasId) {
 		}
 	}
 
-	function getColour(c) {
+	function randomDisplacement(vals, range) {
+		var len = vals.length;
+		var n = 0;
+		for (var i=0; i<len; i++) {
+			n+=vals[i];
+		}
+		n = n / len + Math.random() * range -(range/2);
+		if (n > 1) {
+			n = 1;
+		} else if (n < 0) {
+			n = 0;
+		}
+		return n;
+	}
+
+	var self = {
+		
+		drawMap : function(pointSize, range, roughness) {
+			if (!pointSize) pointSize = 4;
+			if (!range) range = 4;
+			if (!roughness) roughness = 0.4;
+			xx = 0;
+			
+			var tl = Math.random();
+			var tr = Math.random();
+			var br = Math.random();
+			var bl = Math.random();
+			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness,colourMapper.binaryLand);
+		},
+		
+		plotCurve : function(mod) {
+			self.clearCanvas();
+			if (!mod) {
+				mod = function(n){return n}; 
+			}
+			var cHeight = canvas.height;
+			var vals = [];
+			var max = mod(100);
+			var fac =  1 / max;
+			ctx.fillStyle = "#111";
+			for (var i = 100; i >=0; i--) {
+				n = mod(i) * fac;
+				vals[i] = n;
+				ctx.fillRect(i*4, cHeight-1-(n*400) ,4,4);
+			}
+			console.info(vals);
+		},
+
+		clearCanvas : function() {
+			canvas.height = 512;
+			canvas.width = 512;
+		}
+
+	};
+	return self;
+};
+
+var colourMapper = {
+	
+	plasma : function(c) {
 		//Colour mapping algorythm 'borrowed ' from http://www.ic.sunysb.edu/Stu/jseyster/plasma/
 		red = 0;
 		green = 0;
@@ -85,60 +144,13 @@ var Cell = function(canvasId) {
 		}
 
 		return "rgb(" + Math.round(red*256) + "," + Math.round(green*256) + "," + Math.round(blue*256) + ")";
+	},
+	
+	binaryLand : function(c) {
+		if (c < 0.5) {
+			return "#236B8E";
+		} else {
+			return "#458B00";
+		}
 	}
-
-	function randomDisplacement(vals, range) {
-		var len = vals.length;
-		var n = 0;
-		for (var i=0; i<len; i++) {
-			n+=vals[i];
-		}
-		n = n / len + Math.random() * range -(range/2);
-		if (n > 1) {
-			n = 1;
-		} else if (n < 0) {
-			n = 0;
-		}
-		return n;
-	}
-
-	var self = {
-		drawMap : function(pointSize, range, roughness) {
-			if (!pointSize) pointSize = 4;
-			if (!range) range = 4;
-			if (!roughness) roughness = 0.4;
-			xx = 0;
-			
-			var tl = Math.random();
-			var tr = Math.random();
-			var br = Math.random();
-			var bl = Math.random();
-			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness);
-		},
-		
-		plotCurve : function(mod) {
-			self.clearCanvas();
-			if (!mod) {
-				mod = function(n){return n}; 
-			}
-			var cHeight = canvas.height;
-			var vals = [];
-			var max = mod(100);
-			var fac =  1 / max;
-			ctx.fillStyle = "#111";
-			for (var i = 100; i >=0; i--) {
-				n = mod(i) * fac;
-				vals[i] = n;
-				ctx.fillRect(i, cHeight-1-(n*100) ,1,1);
-			}
-			console.info(vals);
-		},
-
-		clearCanvas : function() {
-			canvas.height = 512;
-			canvas.width = 512;
-		}
-
-	};
-	return self;
-};
+}
