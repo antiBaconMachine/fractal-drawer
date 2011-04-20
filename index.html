@@ -69,8 +69,7 @@
 				var range = (document.getElementById("txtRange").value);
 				var roughness = (document.getElementById("txtRoughness").value);
 				var getColour = colourMapper[colourSelect.value];
-				console.info(colourSelect.value);
-				cell.drawMap(pSize, range, roughness, getColour);
+				cell.drawMap(pSize, range, roughness, null, getColour);
 				
 				return false;
 			}
