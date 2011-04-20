@@ -10,6 +10,15 @@
 			#btnSubmit {
 				width: 120px;
 			}
+			form#generator {
+				float: right;
+			}
+			label {
+				display: block;
+				width: 100px;
+				float: right;
+				margin-left: 10px;
+			}
 		</style>
   </head>
   <body>
@@ -27,6 +36,12 @@
 		</select>
 		<label for="selUnitSize">Unit size</label>
 		<br/>
+		
+		<select name="selColourMapper" id="selColourMapper">
+		</select>
+		<label for="selColourMapper">Colour alg</label>
+		<br/>
+		
 		<input name="txtRange" id="txtRange" type="text" value="2">
 		<label for="txtRange">Range</label>
 		<br/>
@@ -40,13 +55,22 @@
 		var cell;
 		window.onload=function() {
 			cell = new Cell("canvas");
+			
+			var colourSelect = document.getElementById("selColourMapper");
+			for (x in colourMapper) {
+				var opt = document.createElement("option");
+				opt.innerHTML = x;
+				colourSelect.appendChild(opt);
+			}		
+			
 			document.forms[0].onsubmit = function(event) {
 				
 				var pSize = parseInt(document.getElementById("selUnitSize").value);
 				var range = (document.getElementById("txtRange").value);
 				var roughness = (document.getElementById("txtRoughness").value);
-
-				cell.drawMap(pSize, range, roughness);
+				var getColour = colourMapper[colourSelect.value];
+				console.info(colourSelect.value);
+				cell.drawMap(pSize, range, roughness, getColour);
 				
 				return false;
 			}

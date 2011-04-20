@@ -64,17 +64,18 @@ var Cell = function(canvasId) {
 
 	var self = {
 		
-		drawMap : function(pointSize, range, roughness) {
+		drawMap : function(pointSize, range, roughness, getColour) {
 			if (!pointSize) pointSize = 4;
 			if (!range) range = 4;
 			if (!roughness) roughness = 0.4;
+			getColour = getColour || colourMapper.plasma;
 			xx = 0;
 			
 			var tl = Math.random();
 			var tr = Math.random();
 			var br = Math.random();
 			var bl = Math.random();
-			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness,colourMapper.binaryLand);
+			divideMap(0,0,canvas.width,tl,tr,br,bl,pointSize,range,roughness,getColour);
 		},
 		
 		plotCurve : function(mod) {
