@@ -12,8 +12,6 @@ var Cell = function(canvasId) {
 	var canvas = document.getElementById(canvasId);
 	var ctx = canvas.getContext("2d");
 	var xx = 0;
-	var maxCurve;
-
 
 	function divideMap(x, y, blockSize, tl, tr, br, bl, pointSize, range, roughness, curve, getColour) {
 		xx++;
@@ -21,7 +19,7 @@ var Cell = function(canvasId) {
 
 			var newRange = range * roughness;
 			var newBlockSize = blockSize /2;
-			var cn = randomDisplacement([tl,tr,bl,br], range);
+			var cn = randomDisplacement([tl,tr,bl,br], range, curve);
 			if (cn > 1) cn = 1;
 			if (cn < 0) cn = 0;
 
@@ -49,13 +47,13 @@ var Cell = function(canvasId) {
 		}
 	}
 
-	function randomDisplacement(vals, range) {
+	function randomDisplacement(vals, range, curve) {
 		var len = vals.length;
 		var n = 0;
 		for (var i=0; i<len; i++) {
 			n+=vals[i];
 		}
-		n = n / len + Math.random() * range -(range/2);
+		n = curve(n / len + Math.random() * range -(range/2));
 		if (n > 1) {
 			n = 1;
 		} else if (n < 0) {
@@ -97,7 +95,7 @@ var Cell = function(canvasId) {
 			var fac =  1 / max;
 			ctx.fillStyle = "#111";
 			for (var i = 100; i >=0; i--) {
-				n = mod(i/100) * fac;
+				n = mod(i/100);// * fac;
 				vals[i] = n;
 				ctx.fillRect(i*4, cHeight-1-(n*400) ,4,4);
 			}
@@ -156,10 +154,26 @@ var colourMapper = {
 	},
 	
 	binaryLand : function(c) {
-		if (c < 0.5) {
+		if (c < 0.2) {
 			return "#236B8E";
 		} else {
 			return "#458B00";
 		}
 	}
+}
+
+var curve = {
+    exponential : function(n) {
+                n=n*10;
+                var x;
+                var BASE=2;
+                var MAX=5;
+                var maxLog = Math.pow(BASE,MAX);
+                if (n<=MAX){
+                    x= Math.pow(BASE,n);
+                } else {
+                    x= maxLog - Math.pow(BASE,MAX-(n-MAX)) + maxLog;
+                }
+                return x/(maxLog*2);
+         }
 }

@@ -69,7 +69,7 @@
 				var range = (document.getElementById("txtRange").value);
 				var roughness = (document.getElementById("txtRoughness").value);
 				var getColour = colourMapper[colourSelect.value];
-				cell.drawMap(pSize, range, roughness, null, getColour);
+				cell.drawMap(pSize, range, roughness, curve.exponential, getColour);
 				
 				return false;
 			}
