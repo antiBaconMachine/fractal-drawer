@@ -41,6 +41,12 @@
 		</select>
 		<label for="selColourMapper">Colour alg</label>
 		<br/>
+                
+                <select name="selCurve" id="selCurve">
+		</select>
+		<label for="selCurve">Curve</label>
+                <input type="submit" name="btnCurve" id="btnCurve" value="show"/>
+		<br/>
 		
 		<input name="txtRange" id="txtRange" type="text" value="2">
 		<label for="txtRange">Range</label>
@@ -61,18 +67,38 @@
 				var opt = document.createElement("option");
 				opt.innerHTML = x;
 				colourSelect.appendChild(opt);
-			}		
+			}
+                        
+                        var curveSelect = document.getElementById("selCurve");
+			for (x in curve) {
+				var opt = document.createElement("option");
+				opt.innerHTML = x;
+				curveSelect.appendChild(opt);
+			}	
 			
-			document.forms[0].onsubmit = function(event) {
+			document.getElementById("btnSubmit").onclick = function(event) {
 				
 				var pSize = parseInt(document.getElementById("selUnitSize").value);
 				var range = (document.getElementById("txtRange").value);
 				var roughness = (document.getElementById("txtRoughness").value);
 				var getColour = colourMapper[colourSelect.value];
-				cell.drawMap(pSize, range, roughness, curve.exponential, getColour);
+                                console.info(curve);
+                                console.info()
+                                var c = curve[curveSelect.value];
+				cell.drawMap(pSize, range, roughness, c, getColour);
 				
 				return false;
 			}
+                        
+                        document.getElementById("btnCurve").onclick = function(event) {
+				var c = curve[curveSelect.value];
+				cell.plotCurve(c);
+				return false;
+			}
+                        
+                        document.forms[0].onsubmit = function(event) {
+                            return false;
+                        }
 		}
 	</script>
   </body>
